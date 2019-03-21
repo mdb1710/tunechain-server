@@ -28,8 +28,12 @@ app.use(function errorHandler(error, req, res, next) {
   res.status(500).json(response);
 });
 
-app.get('/', (req, res) => {
-  res.send('Hello, world!');
-});
+const newPlaylist = ['New Beginning', 'Release Some Tension', 'Still', 'I Missed Us'];
+
+function handleGetPlaylists(req, res){
+  res.json(newPlaylist);
+}
+
+app.get('/api/search', handleGetPlaylists); 
 
 module.exports = app;
