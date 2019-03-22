@@ -8,8 +8,10 @@ const helmet = require('helmet');
 const { NODE_ENV } = require('./config');
 const {CLIENT_ORIGIN} = require('./config');
 const request = require('request');
+const {API_BASE_URL} = require('./config');
 
 const app = express();
+const jsonParser = express.json();
 
 const morganOption = (NODE_ENV === 'production')
   ? 'tiny'
@@ -36,16 +38,16 @@ app.use(function errorHandler(error, req, res, next) {
 
 
 
-const newPlaylist = ['New Beginning', 'Release Some Tension', 'Still', 'I Missed Us'];
 
 
 function handleGetPlaylists(req, res){
-  //MOVE INTO .ENV ASAP
-
+  
   const client_id = process.env.CLIENT_ID;
   const client_secret = process.env.CLIENT_SECRET;
+
+  const { artist, mood, genre } = req.params;
   
-  var authOptions = {
+  let authOptions = {
     url: 'https://accounts.spotify.com/api/token',
     headers: {
       'Authorization': 'Basic ' + (Buffer.from(client_id + ':' + client_secret).toString('base64'))
@@ -60,17 +62,32 @@ function handleGetPlaylists(req, res){
     if (!error && response.statusCode === 200) {
 
       // use the access token to access the Spotify Web API
-      var token = body.access_token;
-      var options = {
-        url: 'https://api.spotify.com/v1/users/jmperezperez',
+      let token = body.access_token;
+      let moodSearch = req.query.mood;
+      let options = {
+        url: `https://api.spotify.com/v1/search?q=${moodSearch}&type=playlist`,
         headers: {
           'Authorization': 'Bearer ' + token
         },
         json: true
       };
       request.get(options, function(error, response, body) {
-        res.json(body);
+        
+        let playlists = body.playlists.items.map(song => {
+          return {
+            id: song.id,
+            name: song.name,
+            href: song.href,
+            tracks: song.tracks,
+            uri: song.uri
+          };
+        });
+        res
+          .status(200)
+          .json(playlists);
+
       });
+      
     }
   });
 }
@@ -79,6 +96,34 @@ app.get('/', (req, res) => {
   res.send('Hello, world!');
 });
 
+// app.get('/refresh_token', function(req, res) {
+
+//   // requesting access token from refresh token
+//   var refresh_token = req.query.refresh_token;
+//   var authOptions = {
+//     url: 'https://accounts.spotify.com/api/token',
+//     headers: { 'Authorization': 'Basic ' + (new Buffer(client_id + ':' + client_secret).toString('base64')) },
+//     form: {
+//       grant_type: 'refresh_token',
+//       refresh_token: refresh_token
+//     },
+//     json: true
+//   };
+
+//   request.post(authOptions, function(error, response, body) {
+//     if (!error && response.statusCode === 200) {
+//       var access_token = body.access_token;
+//       res.send({
+//         'access_token': access_token
+//       });
+//     }
+//   });
+// });
+
 app.get('/api/search', handleGetPlaylists); 
+
+app.get('/api/results', (req, res, next) => {
+  res.send('Search is over');
+});
 
 module.exports = app;

@@ -10,4 +10,17 @@ describe('App', () => {
       .get('/')
       .expect(200, 'Hello, world!');
   });
+
+  it('GET /api/search should receive authorization from Spotify', () => {
+    //test the auth function
+    return supertest(app)
+      .get('/api/search')
+      .expect(200);
+  });
+
+  it('GET /api/search responds with Spotify data objects', () => {
+    return supertest(app)
+      .get('/api/search')
+      .expect(200);
+  });
 });
