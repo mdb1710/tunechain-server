@@ -65,6 +65,7 @@ function handleGetPlaylists(req, res){
       let token = body.access_token;
       let moodSearch = req.query.mood;
       let genreSearch = req.query.genre;
+      let artistSearch = req.query.artist;
       let options = {
         url: `https://api.spotify.com/v1/search?q=${moodSearch}+${genreSearch}&type=playlist`,
         headers: {
@@ -83,7 +84,7 @@ function handleGetPlaylists(req, res){
             uri: song.uri
           };
         });
-        res.json(playlists);
+        res.json(playlists).end();
           
       });
       
