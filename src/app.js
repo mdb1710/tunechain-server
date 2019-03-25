@@ -8,7 +8,7 @@ const helmet = require('helmet');
 const { NODE_ENV } = require('./config');
 const {CLIENT_ORIGIN} = require('./config');
 const request = require('request');
-const {API_BASE_URL} = require('./config');
+
 
 const app = express();
 const jsonParser = express.json();
@@ -64,8 +64,9 @@ function handleGetPlaylists(req, res){
       // use the access token to access the Spotify Web API
       let token = body.access_token;
       let moodSearch = req.query.mood;
+      let genreSearch = req.query.genre;
       let options = {
-        url: `https://api.spotify.com/v1/search?q=${moodSearch}&type=playlist`,
+        url: `https://api.spotify.com/v1/search?q=${moodSearch}+${genreSearch}&type=playlist`,
         headers: {
           'Authorization': 'Bearer ' + token
         },
@@ -82,14 +83,15 @@ function handleGetPlaylists(req, res){
             uri: song.uri
           };
         });
-        res
-          .status(200)
-          .json(playlists);
-
+        res.json(playlists);
+          
       });
       
+      
     }
+    
   });
+  
 }
 
 app.get('/', (req, res) => {
