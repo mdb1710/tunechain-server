@@ -65,7 +65,7 @@ function handleGetPlaylists(req, res){
       let token = body.access_token;
       let moodSearch = req.query.mood;
       let genreSearch = req.query.genre;
-      let artistSearch = req.query.artist;
+      
       let options = {
         url: `https://api.spotify.com/v1/search?q=${moodSearch}+${genreSearch}&type=playlist`,
         headers: {
@@ -74,23 +74,26 @@ function handleGetPlaylists(req, res){
         json: true
       };
       request.get(options, function(error, response, body) {
-        
-        let playlists = body.playlists.items.map(song => {
-          return {
-            id: song.id,
-            name: song.name,
-            href: song.href,
-            tracks: song.tracks,
-            uri: song.uri
-          };
-        });
-        res.json(playlists).end();
+        if (!error && response.statusCode === 200) {
+          let playlistLink = body.playlists.href;
+          let playlists = body.playlists.items.map(song => {
+            return {
+              id: song.id,
+              name: song.name,
+              external_urls: song.external_urls,
+              href: song.href,
+              tracks: song.tracks,
+              uri: song.uri,
+              images: song.images
+            };
+          });
+          res.json(playlists).end();
           
+        }
+      
       });
-      
-      
-    }
     
+    }
   });
   
 }
