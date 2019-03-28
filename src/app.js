@@ -8,6 +8,7 @@ const helmet = require('helmet');
 const { NODE_ENV } = require('./config');
 const {CLIENT_ORIGIN} = require('./config');
 const request = require('request');
+const authRouter = require('./auth/auth-router');
 
 
 const app = express();
@@ -24,6 +25,7 @@ app.use(
   })
 );
 app.use(helmet());
+// app.use('/api/auth', authRouter);
 
 app.use(function errorHandler(error, req, res, next) {
   let response;
@@ -76,11 +78,13 @@ function handleGetPlaylists(req, res){
       request.get(options, function(error, response, body) {
         if (!error && response.statusCode === 200) {
           let playlistLink = body.playlists.href;
+          
           let playlists = body.playlists.items.map(song => {
+            
             return {
               id: song.id,
               name: song.name,
-              external_urls: song.external_urls,
+              external_urls: song.external_urls.spotify,
               href: song.href,
               tracks: song.tracks,
               uri: song.uri,
@@ -98,9 +102,22 @@ function handleGetPlaylists(req, res){
   
 }
 
-app.get('/', (req, res) => {
-  res.send('Hello, world!');
-});
+// app.get('/', (req, res) => {
+//   res.send('Hello, world!');
+// });
+
+function handleAuth (req, res, next) {
+  const { username, password } = req.body;
+  let loginOptions = 
+  res.json({
+    'authToken': '12345'
+  });
+  next();
+
+}
+
+app.post('/api/auth/login', handleAuth);
+
 
 // app.get('/refresh_token', function(req, res) {
 
@@ -128,8 +145,10 @@ app.get('/', (req, res) => {
 
 app.get('/api/search', handleGetPlaylists); 
 
-app.get('/api/results', (req, res, next) => {
-  res.send('Search is over');
-});
+//will have auth middleware to check authtoken
+
+// app.get('/api/results', (req, res, next) => {
+//   res.send('Search is over');
+// });
 
 module.exports = app;
