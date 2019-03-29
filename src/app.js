@@ -12,7 +12,7 @@ const authRouter = require('./auth/auth-router');
 
 
 const app = express();
-const jsonParser = express.json();
+
 
 const morganOption = (NODE_ENV === 'production')
   ? 'tiny'
@@ -101,10 +101,11 @@ function handleGetPlaylists(req, res){
   });
   
 }
-
-// app.get('/', (req, res) => {
-//   res.send('Hello, world!');
-// });
+console.log('world');
+app.get('/', (req, res) => {
+  console.log('Hello');
+  res.send('Hello, world!');
+});
 
 // function handleAuth (req, res, next) {
 //   let username = req.query.username;
@@ -127,39 +128,14 @@ function handleGetPlaylists(req, res){
 
 // }
 
-app.post('/api/login', authRouter);
+// app.post('/api/login', authRouter);
 
 
-// app.get('/refresh_token', function(req, res) {
-
-//   // requesting access token from refresh token
-//   var refresh_token = req.query.refresh_token;
-//   var authOptions = {
-//     url: 'https://accounts.spotify.com/api/token',
-//     headers: { 'Authorization': 'Basic ' + (new Buffer(client_id + ':' + client_secret).toString('base64')) },
-//     form: {
-//       grant_type: 'refresh_token',
-//       refresh_token: refresh_token
-//     },
-//     json: true
-//   };
-
-//   request.post(authOptions, function(error, response, body) {
-//     if (!error && response.statusCode === 200) {
-//       var access_token = body.access_token;
-//       res.send({
-//         'access_token': access_token
-//       });
-//     }
-//   });
-// });
 
 app.get('/api/search', handleGetPlaylists); 
 
 //will have auth middleware to check authtoken
 
-// app.get('/api/results', (req, res, next) => {
-//   res.send('Search is over');
-// });
+
 
 module.exports = app;
