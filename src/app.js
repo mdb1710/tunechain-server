@@ -25,7 +25,7 @@ app.use(
   })
 );
 app.use(helmet());
-// app.use('/api/auth', authRouter);
+app.use('/api/auth', authRouter);
 
 app.use(function errorHandler(error, req, res, next) {
   let response;
@@ -47,7 +47,7 @@ function handleGetPlaylists(req, res){
   const client_id = process.env.CLIENT_ID;
   const client_secret = process.env.CLIENT_SECRET;
 
-  const { artist, mood, genre } = req.params;
+  
   
   let authOptions = {
     url: 'https://accounts.spotify.com/api/token',
@@ -106,17 +106,28 @@ function handleGetPlaylists(req, res){
 //   res.send('Hello, world!');
 // });
 
-function handleAuth (req, res, next) {
-  const { username, password } = req.body;
-  let loginOptions = 
-  res.json({
-    'authToken': '12345'
-  });
-  next();
+// function handleAuth (req, res, next) {
+//   let username = req.query.username;
+//   let password = req.query.password;
+//   let loginOptions = {
+//     url: `${CLIENT_ORIGIN}/api/login?username=${username}&password=${password}`,
+//     headers: {
+//       'Authorization': 'Basic ' + .toString('base64'));
+//     },
+//   };
+//   request.post(function(error, response, body){
+//     if (!error && response.statusCode === 200) {
 
-}
+//     }
+//   })
+//   res.json({
+//     'authToken': '12345'
+//   });
+//   next();
 
-app.post('/api/auth/login', handleAuth);
+// }
+
+app.post('/api/login', authRouter);
 
 
 // app.get('/refresh_token', function(req, res) {

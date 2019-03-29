@@ -11,7 +11,7 @@ describe('App', () => {
       .expect(200, 'Hello, world!');
   });
 
-  it('GET /api/search should receive authorization from Spotify', () => {
+  it('POST /api/search should receive authorization from Spotify', () => {
     //test the auth function
     return supertest(app)
       .get('/api/search')
@@ -21,6 +21,11 @@ describe('App', () => {
   it('GET /api/search responds with Spotify data objects', () => {
     return supertest(app)
       .get('/api/search')
-      .expect(200);
+      .expect(200)
+      .expect('Content-type', /json/)
+      .then(res => {
+        expect(res.body).to.be.an('array');
+        expect(res.body).to.have.all.keys('lat', 'lon');
+      });
   });
 });
